@@ -1,0 +1,10 @@
+{
+  "name": "BukeniRide ",
+  "description": "Premier multi-country e-hailing & testing platform (Namibia & Zambia) with Africa's Talking SMS automated dispatch, real-time GPS tracking, multi-currency payments (NAD/ZMW), offline navigation, and testing suite.",
+  "requestFramePermissions": [
+    "geolocation"
+  ],
+  "majorCapabilities": [
+    "MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"
+  ]
+}

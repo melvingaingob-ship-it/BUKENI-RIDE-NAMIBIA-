@@ -1,0 +1,29 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+    // Connection health check document
+    match /_connection_test/{testId} {
+      allow read, write: if true;
+    }
+
+    // User accounts collection for phone authentication and persistent profiles
+    match /users/{userId} {
+      allow read, write: if true;
+    }
+
+    // Rides collection for bookings, active trips, and history
+    match /rides/{rideId} {
+      allow read, write: if true;
+    }
+
+    // Drivers collection
+    match /drivers/{driverId} {
+      allow read, write: if true;
+    }
+
+    // Audit and activity logging for passengers, drivers, and admin operations
+    match /audit_logs/{logId} {
+      allow read, write: if true;
+    }
+  }
+}

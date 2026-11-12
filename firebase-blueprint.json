@@ -1,0 +1,110 @@
+{
+  "entities": {
+    "Ride": {
+      "title": "Ride",
+      "description": "Represents an e-hailing ride booking with fare breakdown, coordinates, driver assignment, and status.",
+      "type": "object",
+      "properties": {
+        "bookingRef": { "type": "string", "description": "Unique booking reference code e.g. BK-123456" },
+        "status": {
+          "type": "string",
+          "enum": ["idle", "searching", "driver_assigned", "driver_arriving", "in_trip", "completed", "cancelled"],
+          "description": "Current state of the ride"
+        },
+        "pickupName": { "type": "string", "description": "Name of the pickup landmark or area" },
+        "pickupAddress": { "type": "string", "description": "Street address of pickup" },
+        "pickupLat": { "type": "number", "description": "Latitude of pickup" },
+        "pickupLng": { "type": "number", "description": "Longitude of pickup" },
+        "destName": { "type": "string", "description": "Name of destination landmark or area" },
+        "destAddress": { "type": "string", "description": "Street address of destination" },
+        "destLat": { "type": "number", "description": "Latitude of destination" },
+        "destLng": { "type": "number", "description": "Longitude of destination" },
+        "tier": { "type": "string", "description": "Ride tier class (e.g., Bukeni Go, Bukeni Comfort)" },
+        "passengerName": { "type": "string", "description": "Rider full name" },
+        "passengerPhone": { "type": "string", "description": "Rider Zambian contact number" },
+        "driverId": { "type": "string", "description": "Assigned driver unique ID" },
+        "driverName": { "type": "string", "description": "Assigned driver full name" },
+        "driverPhone": { "type": "string", "description": "Driver contact number" },
+        "driverPlate": { "type": "string", "description": "Driver Zambian vehicle registration number" },
+        "distanceKm": { "type": "number", "description": "Total estimated distance in kilometers" },
+        "fareZMW": { "type": "number", "description": "Gross total trip fare in Zambian Kwacha" },
+        "platformFee10ZMW": { "type": "number", "description": "10% platform commission deducted" },
+        "driverPayout90ZMW": { "type": "number", "description": "90% fare kept by driver" },
+        "currency": { "type": "string", "description": "Selected payment currency" },
+        "paymentMethod": { "type": "string", "description": "Payment gateway e.g. mtn_momo, airtel_money, cash" },
+        "createdAt": { "type": "string", "description": "Timestamp ISO or localized string" },
+        "completedAt": { "type": "string", "description": "Completion timestamp" }
+      },
+      "required": ["bookingRef", "status", "pickupName", "destName", "fareZMW", "driverPayout90ZMW"]
+    },
+    "Driver": {
+      "title": "Driver",
+      "description": "Registered driver partner profile with vehicle telematics and wallet balance.",
+      "type": "object",
+      "properties": {
+        "name": { "type": "string", "description": "Driver full name" },
+        "phone": { "type": "string", "description": "Driver mobile phone" },
+        "vehiclePlate": { "type": "string", "description": "Zambian license plate number" },
+        "vehicleModel": { "type": "string", "description": "Vehicle make and model" },
+        "isOnline": { "type": "boolean", "description": "Driver online availability status" },
+        "isVerified": { "type": "boolean", "description": "Accreditation verification status approved by admin" },
+        "walletBalanceZMW": { "type": "number", "description": "Driver wallet balance in ZMW" },
+        "currentLat": { "type": "number", "description": "Current latitude coordinate" },
+        "currentLng": { "type": "number", "description": "Current longitude coordinate" }
+      },
+      "required": ["name", "phone", "vehiclePlate", "walletBalanceZMW"]
+    },
+    "AuditLog": {
+      "title": "AuditLog",
+      "description": "System event and ride activity log entry for passengers, drivers, and admin auditing.",
+      "type": "object",
+      "properties": {
+        "timestamp": { "type": "string", "description": "Event timestamp" },
+        "category": { "type": "string", "description": "Audit category (dispatch, payment, safety, arrival, call)" },
+        "rideRef": { "type": "string", "description": "Associated ride booking reference" },
+        "actorRole": { "type": "string", "description": "Role generating the log (passenger, driver, admin, system)" },
+        "actorName": { "type": "string", "description": "Name of actor" },
+        "action": { "type": "string", "description": "Action summary description" },
+        "details": { "type": "string", "description": "Detailed payload or narrative of event" },
+        "amountZMW": { "type": "number", "description": "Monetary value if applicable" }
+      },
+      "required": ["timestamp", "category", "actorRole", "action"]
+    },
+    "User": {
+      "title": "User",
+      "description": "User account profile authenticated via mobile number and country code, storing preferences and session state.",
+      "type": "object",
+      "properties": {
+        "uid": { "type": "string", "description": "Firebase Auth UID" },
+        "phoneNumber": { "type": "string", "description": "Full international phone number with country code" },
+        "country": { "type": "string", "enum": ["NAMIBIA", "ZAMBIA"], "description": "User home country" },
+        "countryCode": { "type": "string", "description": "Country dial prefix e.g. +264 or +260" },
+        "displayName": { "type": "string", "description": "User display name" },
+        "role": { "type": "string", "enum": ["passenger", "driver", "admin"], "description": "User active role" },
+        "walletBalance": { "type": "number", "description": "Persistent mobile wallet balance in local currency" },
+        "loyaltyPoints": { "type": "number", "description": "Accumulated loyalty rewards points" },
+        "createdAt": { "type": "string", "description": "Account registration timestamp" },
+        "lastLoginAt": { "type": "string", "description": "Last sign in timestamp" }
+      },
+      "required": ["uid", "phoneNumber", "country", "role"]
+    }
+  },
+  "firestore": {
+    "/users/{userId}": {
+      "schema": "User",
+      "description": "Authenticated user accounts and persistent session profiles."
+    },
+    "/rides/{rideId}": {
+      "schema": "Ride",
+      "description": "Collection of all ride requests, active trips, and completed rides."
+    },
+    "/drivers/{driverId}": {
+      "schema": "Driver",
+      "description": "Fleet drivers with telematics and earnings wallet balances."
+    },
+    "/audit_logs/{logId}": {
+      "schema": "AuditLog",
+      "description": "Activity and financial dispatch logging for riders, drivers, and administrators."
+    }
+  }
+}
